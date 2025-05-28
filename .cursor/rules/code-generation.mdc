@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Global code generation rule
+globs: 
+alwaysApply: true
+---
+
+- Always ask me whenever you want to create a new file
+- This will allow me to review every step before creating the commits
+
