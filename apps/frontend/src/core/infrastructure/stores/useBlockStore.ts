@@ -92,6 +92,32 @@ export const useBlockStore = defineStore('blocks', () => {
     }
   }
 
+  async function deleteBlock(id: string) {
+    const repository = new BlockRepositoryImpl();
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const block = blocks.value.get(id);
+      if (!block) {
+        throw new Error('Block not found');
+      }
+
+      await repository.delete(id);
+      
+      // Mettre à jour les maps
+      blocks.value.delete(id);
+      const pageBlocks = blocksByPage.value.get(block.pageId) || [];
+      const updatedPageBlocks = pageBlocks.filter(b => b.id !== id);
+      blocksByPage.value.set(block.pageId, updatedPageBlocks);
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     blocks,
@@ -109,5 +135,6 @@ export const useBlockStore = defineStore('blocks', () => {
     fetchBlocks,
     createBlock,
     updateBlock,
+    deleteBlock,
   };
 }); 
