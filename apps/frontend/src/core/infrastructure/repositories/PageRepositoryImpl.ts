@@ -111,7 +111,18 @@ export class PageRepositoryImpl implements PageRepository {
   }
 
   async delete(id: string): Promise<void> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete page: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error deleting page:', error);
+      throw error;
+    }
   }
 
   async reorder(ids: string[]): Promise<void> {
