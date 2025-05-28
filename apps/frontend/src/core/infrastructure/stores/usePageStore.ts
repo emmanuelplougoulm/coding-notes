@@ -97,6 +97,54 @@ export const usePageStore = defineStore('pages', () => {
     }
   }
 
+  async function updatePage(id: string, page: Partial<Page>) {
+    const repository = new PageRepositoryImpl();
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const updatedPage = await repository.update(id, page);
+      
+      // Mettre à jour les maps
+      pages.value.set(updatedPage.id, updatedPage);
+      
+      // Si le parent a changé, mettre à jour les deux collections de pages
+      const oldPage = pages.value.get(id);
+      if (oldPage && oldPage.parentId !== updatedPage.parentId) {
+        // Retirer de l'ancien parent
+        const oldParentPages = pagesByParent.value.get(oldPage.parentId) || [];
+        pagesByParent.value.set(
+          oldPage.parentId,
+          oldParentPages.filter(p => p.id !== id)
+        );
+        
+        // Ajouter au nouveau parent
+        const newParentPages = pagesByParent.value.get(updatedPage.parentId) || [];
+        pagesByParent.value.set(updatedPage.parentId, [...newParentPages, updatedPage]);
+      } else {
+        // Mettre à jour dans la collection du parent actuel
+        const parentPages = pagesByParent.value.get(updatedPage.parentId) || [];
+        const pageIndex = parentPages.findIndex(p => p.id === id);
+        if (pageIndex !== -1) {
+          parentPages[pageIndex] = updatedPage;
+          pagesByParent.value.set(updatedPage.parentId, parentPages);
+        }
+      }
+      
+      // Si c'est la page courante, la mettre à jour
+      if (currentPage.value?.id === id) {
+        currentPage.value = updatedPage as PageWithBlocks;
+      }
+      
+      return updatedPage;
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     pages,
@@ -116,5 +164,6 @@ export const usePageStore = defineStore('pages', () => {
     fetchPage,
     fetchPagesByParent,
     createPage,
+    updatePage,
   };
 }); 
