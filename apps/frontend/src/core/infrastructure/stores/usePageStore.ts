@@ -180,6 +180,38 @@ export const usePageStore = defineStore('pages', () => {
     }
   }
 
+  async function reorderPages(ids: string[]) {
+    const repository = new PageRepositoryImpl();
+    loading.value = true;
+    error.value = null;
+
+    try {
+      await repository.reorder(ids);
+      
+      // Mettre à jour l'ordre des pages dans toutes les collections
+      ids.forEach((id, index) => {
+        const page = pages.value.get(id);
+        if (page) {
+          // Mettre à jour l'ordre dans la collection du parent
+          const parentPages = pagesByParent.value.get(page.parentId) || [];
+          const pageIndex = parentPages.findIndex(p => p.id === id);
+          if (pageIndex !== -1) {
+            // Retirer la page de sa position actuelle
+            parentPages.splice(pageIndex, 1);
+            // Insérer la page à sa nouvelle position
+            parentPages.splice(index, 0, page);
+            pagesByParent.value.set(page.parentId, parentPages);
+          }
+        }
+      });
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     pages,
@@ -201,5 +233,6 @@ export const usePageStore = defineStore('pages', () => {
     createPage,
     updatePage,
     deletePage,
+    reorderPages,
   };
 }); 
