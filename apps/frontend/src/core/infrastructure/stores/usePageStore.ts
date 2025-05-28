@@ -75,6 +75,28 @@ export const usePageStore = defineStore('pages', () => {
     }
   }
 
+  async function createPage(page: Omit<Page, 'id' | 'createdAt' | 'updatedAt'>) {
+    const repository = new PageRepositoryImpl();
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const newPage = await repository.create(page);
+      
+      // Mettre à jour les maps
+      pages.value.set(newPage.id, newPage);
+      const parentPages = pagesByParent.value.get(newPage.parentId) || [];
+      pagesByParent.value.set(newPage.parentId, [...parentPages, newPage]);
+      
+      return newPage;
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     pages,
@@ -93,5 +115,6 @@ export const usePageStore = defineStore('pages', () => {
     // Actions
     fetchPage,
     fetchPagesByParent,
+    createPage,
   };
 }); 
