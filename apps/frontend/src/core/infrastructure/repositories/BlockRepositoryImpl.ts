@@ -102,7 +102,22 @@ export class BlockRepositoryImpl implements BlockRepository {
   }
 
   async reorder(pageId: string, ids: string[]): Promise<void> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(`${this.baseUrl}/reorder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pageId, ids }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to reorder blocks: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error reordering blocks:', error);
+      throw error;
+    }
   }
 
   async move(id: string, newParentId: string | null, newOrder: number): Promise<void> {
