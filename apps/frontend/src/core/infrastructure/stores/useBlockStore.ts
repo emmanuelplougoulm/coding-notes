@@ -66,6 +66,32 @@ export const useBlockStore = defineStore('blocks', () => {
     }
   }
 
+  async function updateBlock(id: string, block: Partial<Block>) {
+    const repository = new BlockRepositoryImpl();
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const updatedBlock = await repository.update(id, block);
+      
+      // Mettre à jour les maps
+      blocks.value.set(updatedBlock.id, updatedBlock);
+      const pageBlocks = blocksByPage.value.get(updatedBlock.pageId) || [];
+      const blockIndex = pageBlocks.findIndex(b => b.id === updatedBlock.id);
+      if (blockIndex !== -1) {
+        pageBlocks[blockIndex] = updatedBlock;
+        blocksByPage.value.set(updatedBlock.pageId, pageBlocks);
+      }
+
+      return updatedBlock;
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     blocks,
@@ -82,5 +108,6 @@ export const useBlockStore = defineStore('blocks', () => {
     // Actions
     fetchBlocks,
     createBlock,
+    updateBlock,
   };
 }); 
