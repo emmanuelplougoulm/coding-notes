@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { Page, PageWithBlocks } from '../../domain/entities/Page';
+import { PageRepositoryImpl } from '../repositories/PageRepositoryImpl';
+import { useBlockStore } from './useBlockStore';
 
 export const usePageStore = defineStore('pages', () => {
   // State
@@ -24,6 +26,32 @@ export const usePageStore = defineStore('pages', () => {
   const isLoading = computed(() => loading.value);
   const hasError = computed(() => error.value !== null);
 
+  // Actions
+  async function fetchPage(id: string) {
+    const repository = new PageRepositoryImpl();
+    const blockStore = useBlockStore();
+    
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const page = await repository.findById(id);
+      if (page) {
+        currentPage.value = page;
+        pages.value.set(page.id, page);
+        
+        // Charger les blocks de la page
+        await blockStore.fetchBlocks(page.id);
+      }
+      return page;
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     pages,
@@ -38,5 +66,8 @@ export const usePageStore = defineStore('pages', () => {
     getCurrentPage,
     isLoading,
     hasError,
+    
+    // Actions
+    fetchPage,
   };
 }); 
