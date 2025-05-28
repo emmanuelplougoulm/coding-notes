@@ -44,6 +44,28 @@ export const useBlockStore = defineStore('blocks', () => {
     }
   }
 
+  async function createBlock(block: Omit<Block, 'id' | 'createdAt' | 'updatedAt'>) {
+    const repository = new BlockRepositoryImpl();
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const createdBlock = await repository.create(block);
+      
+      // Mettre à jour les maps
+      blocks.value.set(createdBlock.id, createdBlock);
+      const pageBlocks = blocksByPage.value.get(createdBlock.pageId) || [];
+      blocksByPage.value.set(createdBlock.pageId, [...pageBlocks, createdBlock]);
+
+      return createdBlock;
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     blocks,
@@ -59,5 +81,6 @@ export const useBlockStore = defineStore('blocks', () => {
     
     // Actions
     fetchBlocks,
+    createBlock,
   };
 }); 
