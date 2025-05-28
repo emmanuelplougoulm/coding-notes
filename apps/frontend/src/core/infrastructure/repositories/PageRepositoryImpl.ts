@@ -1,10 +1,18 @@
-import type { Page } from '../../domain/entities/Page';
-import type { PageRepository, PageWithBlocks } from '../../domain/repositories/PageRepository';
+import type { Page, PageWithBlocks } from '../../domain/entities/Page';
+import type { PageRepository } from '../../domain/repositories/PageRepository';
 import type { CreatePageDTO } from '../../domain/use-cases/CreatePageUseCase';
 import type { UpdatePageDTO } from '../../domain/use-cases/UpdatePageUseCase';
 
 export class PageRepositoryImpl implements PageRepository {
   async findById(id: string): Promise<PageWithBlocks | null> {
+    throw new Error('Method not implemented.');
+  }
+
+  async findAll(): Promise<Page[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  async findByParentId(parentId: string | null): Promise<Page[]> {
     throw new Error('Method not implemented.');
   }
 
@@ -16,11 +24,15 @@ export class PageRepositoryImpl implements PageRepository {
     throw new Error('Method not implemented.');
   }
 
-  async update(id: string, page: UpdatePageDTO): Promise<Page> {
+  async update(id: string, page: Partial<Page>): Promise<Page> {
     throw new Error('Method not implemented.');
   }
 
   async delete(id: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  async reorder(ids: string[]): Promise<void> {
     throw new Error('Method not implemented.');
   }
 
