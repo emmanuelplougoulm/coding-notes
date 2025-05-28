@@ -145,6 +145,41 @@ export const usePageStore = defineStore('pages', () => {
     }
   }
 
+  async function deletePage(id: string) {
+    const repository = new PageRepositoryImpl();
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const page = pages.value.get(id);
+      if (!page) {
+        throw new Error('Page not found');
+      }
+
+      await repository.delete(id);
+      
+      // Mettre à jour les maps
+      pages.value.delete(id);
+      
+      // Retirer de la collection du parent
+      const parentPages = pagesByParent.value.get(page.parentId) || [];
+      pagesByParent.value.set(
+        page.parentId,
+        parentPages.filter(p => p.id !== id)
+      );
+      
+      // Si c'est la page courante, la réinitialiser
+      if (currentPage.value?.id === id) {
+        currentPage.value = null;
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     pages,
@@ -165,5 +200,6 @@ export const usePageStore = defineStore('pages', () => {
     fetchPagesByParent,
     createPage,
     updatePage,
+    deletePage,
   };
 }); 
