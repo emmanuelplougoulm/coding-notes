@@ -26,7 +26,19 @@ export class PageRepositoryImpl implements PageRepository {
   }
 
   async findAll(): Promise<Page[]> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(this.baseUrl);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch pages: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data as Page[];
+    } catch (error) {
+      console.error('Error fetching pages:', error);
+      throw error;
+    }
   }
 
   async findByParentId(parentId: string | null): Promise<Page[]> {
