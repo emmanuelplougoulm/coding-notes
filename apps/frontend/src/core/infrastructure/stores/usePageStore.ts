@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import type { Page, PageWithBlocks } from '../../domain/entities/Page';
 
 export const usePageStore = defineStore('pages', () => {
@@ -10,6 +10,20 @@ export const usePageStore = defineStore('pages', () => {
   const loading = ref(false);
   const error = ref<string | null>(null);
 
+  // Getters
+  const getPage = computed(() => {
+    return (id: string) => pages.value.get(id) || null;
+  });
+
+  const getPagesByParent = computed(() => {
+    return (parentId: string | null) => pagesByParent.value.get(parentId) || [];
+  });
+
+  const getCurrentPage = computed(() => currentPage.value);
+
+  const isLoading = computed(() => loading.value);
+  const hasError = computed(() => error.value !== null);
+
   return {
     // State
     pages,
@@ -17,5 +31,12 @@ export const usePageStore = defineStore('pages', () => {
     currentPage,
     loading,
     error,
+    
+    // Getters
+    getPage,
+    getPagesByParent,
+    getCurrentPage,
+    isLoading,
+    hasError,
   };
 }); 
