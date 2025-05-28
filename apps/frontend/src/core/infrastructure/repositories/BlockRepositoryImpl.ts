@@ -87,7 +87,18 @@ export class BlockRepositoryImpl implements BlockRepository {
   }
 
   async delete(id: string): Promise<void> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete block: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error deleting block:', error);
+      throw error;
+    }
   }
 
   async reorder(pageId: string, ids: string[]): Promise<void> {
