@@ -126,7 +126,22 @@ export class PageRepositoryImpl implements PageRepository {
   }
 
   async reorder(ids: string[]): Promise<void> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(`${this.baseUrl}/reorder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to reorder pages: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error reordering pages:', error);
+      throw error;
+    }
   }
 
   async findChildren(parentId: string): Promise<Page[]> {
