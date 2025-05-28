@@ -2,12 +2,13 @@
   "name": "@coding-notes/tsconfig",
   "version": "0.0.0",
   "private": true,
+  "main": "vue.json",
   "files": [
     "base.json",
     "vue.json",
     "node.json"
   ],
-  "dependencies": {
+  "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
     "@vue/tsconfig": "^0.5.1",
     "typescript": "~5.3.0"
