@@ -1,9 +1,10 @@
 import type { Page } from '../../domain/entities/Page';
-import type { PageRepository } from '../../domain/repositories/PageRepository';
-import type { CreatePageDTO, UpdatePageDTO } from '../../domain/use-cases/CreatePageUseCase';
+import type { PageRepository, PageWithBlocks } from '../../domain/repositories/PageRepository';
+import type { CreatePageDTO } from '../../domain/use-cases/CreatePageUseCase';
+import type { UpdatePageDTO } from '../../domain/use-cases/UpdatePageUseCase';
 
 export class PageRepositoryImpl implements PageRepository {
-  async findById(id: string): Promise<Page | null> {
+  async findById(id: string): Promise<PageWithBlocks | null> {
     throw new Error('Method not implemented.');
   }
 
@@ -11,7 +12,7 @@ export class PageRepositoryImpl implements PageRepository {
     throw new Error('Method not implemented.');
   }
 
-  async create(page: CreatePageDTO): Promise<Page> {
+  async create(page: Omit<Page, 'id' | 'createdAt' | 'updatedAt'>): Promise<Page> {
     throw new Error('Method not implemented.');
   }
 
