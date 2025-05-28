@@ -22,4 +22,23 @@ export class BlockRepositoryImpl implements BlockRepository {
       throw error;
     }
   }
+
+  async findByPageId(pageId: string): Promise<Block[]> {
+    try {
+      const url = new URL(this.baseUrl, window.location.origin);
+      url.searchParams.append('pageId', pageId);
+
+      const response = await fetch(url.toString());
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch blocks: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data as Block[];
+    } catch (error) {
+      console.error('Error fetching blocks:', error);
+      throw error;
+    }
+  }
 } 
