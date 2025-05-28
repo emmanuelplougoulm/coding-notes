@@ -1,6 +1,5 @@
 import type { Page, PageWithBlocks } from '../../domain/entities/Page';
 import type { PageRepository } from '../../domain/repositories/PageRepository';
-import type { CreatePageDTO } from '../../domain/use-cases/CreatePageUseCase';
 import type { UpdatePageDTO } from '../../domain/use-cases/UpdatePageUseCase';
 
 export class PageRepositoryImpl implements PageRepository {
@@ -69,7 +68,25 @@ export class PageRepositoryImpl implements PageRepository {
   }
 
   async create(page: Omit<Page, 'id' | 'createdAt' | 'updatedAt'>): Promise<Page> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(page),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create page: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data as Page;
+    } catch (error) {
+      console.error('Error creating page:', error);
+      throw error;
+    }
   }
 
   async update(id: string, page: Partial<Page>): Promise<Page> {
