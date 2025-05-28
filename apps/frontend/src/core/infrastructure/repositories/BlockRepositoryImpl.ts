@@ -65,7 +65,25 @@ export class BlockRepositoryImpl implements BlockRepository {
   }
 
   async update(id: string, block: Partial<Block>): Promise<Block> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(block),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update block: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data as Block;
+    } catch (error) {
+      console.error('Error updating block:', error);
+      throw error;
+    }
   }
 
   async delete(id: string): Promise<void> {
