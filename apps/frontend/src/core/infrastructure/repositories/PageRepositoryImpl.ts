@@ -42,7 +42,26 @@ export class PageRepositoryImpl implements PageRepository {
   }
 
   async findByParentId(parentId: string | null): Promise<Page[]> {
-    throw new Error('Method not implemented.');
+    try {
+      const url = new URL(this.baseUrl, window.location.origin);
+      if (parentId !== null) {
+        url.searchParams.append('parentId', parentId);
+      } else {
+        url.searchParams.append('parentId', 'null');
+      }
+
+      const response = await fetch(url.toString());
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch pages by parent: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data as Page[];
+    } catch (error) {
+      console.error('Error fetching pages by parent:', error);
+      throw error;
+    }
   }
 
   async findByUserId(userId: string): Promise<Page[]> {
