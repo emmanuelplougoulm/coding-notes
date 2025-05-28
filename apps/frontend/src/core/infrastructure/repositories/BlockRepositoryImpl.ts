@@ -121,6 +121,21 @@ export class BlockRepositoryImpl implements BlockRepository {
   }
 
   async move(id: string, newParentId: string | null, newOrder: number): Promise<void> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}/move`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newParentId, newOrder }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to move block: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error moving block:', error);
+      throw error;
+    }
   }
 } 
