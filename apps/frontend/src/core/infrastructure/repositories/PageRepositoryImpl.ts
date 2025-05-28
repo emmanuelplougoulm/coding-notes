@@ -143,8 +143,4 @@ export class PageRepositoryImpl implements PageRepository {
       throw error;
     }
   }
-
-  async findChildren(parentId: string): Promise<Page[]> {
-    throw new Error('Method not implemented.');
-  }
 } 
