@@ -52,6 +52,29 @@ export const usePageStore = defineStore('pages', () => {
     }
   }
 
+  async function fetchPagesByParent(parentId: string | null) {
+    const repository = new PageRepositoryImpl();
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const fetchedPages = await repository.findByParentId(parentId);
+      pagesByParent.value.set(parentId, fetchedPages);
+      
+      // Mettre à jour la map des pages
+      fetchedPages.forEach(page => {
+        pages.value.set(page.id, page);
+      });
+      
+      return fetchedPages;
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     pages,
@@ -69,5 +92,6 @@ export const usePageStore = defineStore('pages', () => {
     
     // Actions
     fetchPage,
+    fetchPagesByParent,
   };
 }); 
