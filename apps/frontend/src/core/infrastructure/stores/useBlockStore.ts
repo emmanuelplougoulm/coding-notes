@@ -141,6 +141,36 @@ export const useBlockStore = defineStore('blocks', () => {
     }
   }
 
+  async function moveBlock(id: string, newParentId: string | null, newOrder: number) {
+    const repository = new BlockRepositoryImpl();
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const block = blocks.value.get(id);
+      if (!block) {
+        throw new Error('Block not found');
+      }
+
+      await repository.move(id, newParentId, newOrder);
+      
+      // Mettre à jour les maps
+      const oldPageBlocks = blocksByPage.value.get(block.pageId) || [];
+      const updatedOldPageBlocks = oldPageBlocks.filter(b => b.id !== id);
+      blocksByPage.value.set(block.pageId, updatedOldPageBlocks);
+
+      // Recharger les blocks de la nouvelle page
+      if (newParentId) {
+        await fetchBlocks(newParentId);
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Une erreur est survenue';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     // State
     blocks,
@@ -160,5 +190,6 @@ export const useBlockStore = defineStore('blocks', () => {
     updateBlock,
     deleteBlock,
     reorderBlocks,
+    moveBlock,
   };
 }); 
