@@ -4,8 +4,25 @@ import type { CreatePageDTO } from '../../domain/use-cases/CreatePageUseCase';
 import type { UpdatePageDTO } from '../../domain/use-cases/UpdatePageUseCase';
 
 export class PageRepositoryImpl implements PageRepository {
+  private readonly baseUrl = '/api/pages';
+
   async findById(id: string): Promise<PageWithBlocks | null> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null;
+        }
+        throw new Error(`Failed to fetch page: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data as PageWithBlocks;
+    } catch (error) {
+      console.error('Error fetching page:', error);
+      throw error;
+    }
   }
 
   async findAll(): Promise<Page[]> {
