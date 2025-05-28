@@ -1,0 +1,7 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
+  "extends": ["@coding-notes/biome-config/biome.json"],
+  "files": {
+    "ignore": ["dist", "node_modules"]
+  }
+} 

@@ -1,3 +1,5 @@
+"@coding-notes/prettier-config"
+
 {
   "semi": false,
   "tabWidth": 2,
