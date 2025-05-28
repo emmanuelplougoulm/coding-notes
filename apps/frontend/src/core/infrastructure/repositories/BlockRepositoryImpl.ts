@@ -41,4 +41,24 @@ export class BlockRepositoryImpl implements BlockRepository {
       throw error;
     }
   }
+
+  async create(block: Omit<Block, 'id' | 'createdAt' | 'updatedAt'>): Promise<Block> {
+    throw new Error('Method not implemented.');
+  }
+
+  async update(id: string, block: Partial<Block>): Promise<Block> {
+    throw new Error('Method not implemented.');
+  }
+
+  async delete(id: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  async reorder(pageId: string, ids: string[]): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  async move(id: string, newParentId: string | null, newOrder: number): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
 } 
