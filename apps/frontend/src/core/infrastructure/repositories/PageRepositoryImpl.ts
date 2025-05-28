@@ -1,6 +1,5 @@
 import type { Page, PageWithBlocks } from '../../domain/entities/Page';
 import type { PageRepository } from '../../domain/repositories/PageRepository';
-import type { UpdatePageDTO } from '../../domain/use-cases/UpdatePageUseCase';
 
 export class PageRepositoryImpl implements PageRepository {
   private readonly baseUrl = '/api/pages';
@@ -90,7 +89,25 @@ export class PageRepositoryImpl implements PageRepository {
   }
 
   async update(id: string, page: Partial<Page>): Promise<Page> {
-    throw new Error('Method not implemented.');
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(page),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update page: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data as Page;
+    } catch (error) {
+      console.error('Error updating page:', error);
+      throw error;
+    }
   }
 
   async delete(id: string): Promise<void> {
